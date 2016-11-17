@@ -1,4 +1,4 @@
-$(function() {
+(function() {
     window.App = {
         Models: {},
         Collections: {},
@@ -6,40 +6,39 @@ $(function() {
 		Router: {}
     };
 
-    window.template = function(id) {
-        return _.template( $('#' + id). html() );
-    };
+	var vent = _.extend({}, Backbone.Events);
+	
+	App.Views.specialTasks = Backbone.View.extend({
+		initialize: function (){
+			vent.on('specialTasks:show', this.show, this);
+		},
+		show: function(id){
+			var specialTask = this.collection.get('id');
+			var specialTaskView = new App.View.specialTask({model: specialTask});
+			$('body').append(specialTaskView.render().el);
+		}
+	});
 
     App.Router = Backbone.Router.extend({
 		routes: {
-			''                : 'index',
-			'page/:id/*simbo' : 'page',
-			'search/:query'   : 'search',
-			'*other'          : 'default'
-		},
-		index: function(){
-			console.log('Всем привет');
+			''                 : 'start',
+			'specialTasks/:id' : 'showSpecialTasks'
 		},
 		
-	
-page: function(id, simbo){
-	//console.log('роут page' + id + '!!!');
-	console.log(simbo);
-	
-},
-
-
-
-
-search: function(query) {
-},
-default: function(other){
-	alert('Go'+ other);
-
-	
-}
+		showSpecialTasks: function(id){
+			vent.trigger('specialTasks:show', id);
+		},
+		
+		start: function(){
+			console.log('Стартовая страница');
+		}
 	});
-new App.Router();
-Backbone.history.start();
+	
+	new App.Views.SpecialTasks({collection: someCollection});
+	
+	new App.Router;
+	Backbone.history.start();
+	
 	
 })();
+
